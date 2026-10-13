@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cortaí AI — Clipador inteligente</title>
+<style>
+:root{color-scheme:dark;--bg:#090b10;--panel:#121722;--panel2:#191f2c;--line:#2b3445;--text:#f5f7fb;--muted:#9aa6b8;--lime:#c9ff50;--purple:#a38bff;--red:#ff6979}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;background:radial-gradient(ellipse at 78% -12%,#292044 0,transparent 35%),var(--bg)}
+header{height:70px;padding:0 clamp(16px,5vw,68px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:900;letter-spacing:-.8px}.logo{width:35px;height:35px;border-radius:11px;background:var(--lime);color:#10140a;display:grid;place-items:center}.ai{font-size:10px;background:#a38bff22;color:#c4b7ff;border:1px solid #a38bff55;border-radius:7px;padding:5px 7px;letter-spacing:1px;margin-left:2px}
+.status{font-size:11px;color:var(--lime);border:1px solid #c9ff5038;background:#c9ff500b;padding:8px 10px;border-radius:99px}
+main{max-width:1160px;margin:auto;padding:38px 22px 60px}.eyebrow{color:var(--lime);font-size:11px;font-weight:850;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.02;letter-spacing:-2px;margin:12px 0}h1 span{color:var(--lime)}.sub{max-width:700px;color:var(--muted);line-height:1.65;font-size:15px;margin-bottom:28px}
+.grid{display:grid;grid-template-columns:1fr 330px;gap:17px;align-items:start}.panel{background:linear-gradient(145deg,#161c28,#10141c);border:1px solid var(--line);border-radius:18px;padding:20px}.panel+.panel{margin-top:14px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}.head h2{font-size:16px;margin:0}.step{font-size:10px;color:var(--lime);letter-spacing:1px;font-weight:800}
+.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}.field input,.field textarea,.field select{width:100%;background:#090c12;color:var(--text);border:1px solid #343e50;border-radius:10px;padding:12px;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--lime)}.field textarea{resize:vertical;min-height:155px;line-height:1.55;font-size:12px}
+.row{display:flex;gap:9px}.row input{flex:1;min-width:0}.btn{border-radius:10px;padding:12px 15px;font-size:12px;font-weight:850;border:1px solid transparent}.primary{background:var(--lime);color:#10140a}.secondary{background:#202736;color:var(--text);border-color:#333d4e}.ghost{background:transparent;border-color:#384255;color:var(--muted)}.btn:disabled{opacity:.45;cursor:not-allowed}.help{color:var(--muted);font-size:11px;line-height:1.55;margin-top:9px}.divider{height:1px;background:var(--line);margin:18px 0}
+.video{border-radius:13px;overflow:hidden;background:#07090d;border:1px solid var(--line);margin-top:14px}.videotop{padding:10px 12px;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.videobody{min-height:190px;display:grid;place-items:center;text-align:center;padding:18px;background:radial-gradient(ellipse at center,#242b3b,#080a0e 75%)}.videobody .play{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--lime);color:#10140a;margin:0 auto 10px}.videobody p{font-size:11px;color:var(--muted);max-width:310px;line-height:1.5}
+.alert{display:none;border-radius:10px;padding:11px 12px;margin-top:12px;font-size:12px;line-height:1.5}.alert.error{display:block;color:#ffabb4;background:#ff697910;border:1px solid #ff697933}.alert.info{display:block;color:#c7bbff;background:#a38bff12;border:1px solid #a38bff44}
+.preset{display:flex;gap:7px;flex-wrap:wrap}.pill{border:1px solid #343e50;color:var(--muted);background:#0a0d13;border-radius:99px;padding:8px 10px;font-size:11px}.pill.active{border-color:var(--lime);color:var(--lime);background:#c9ff5010}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:15px 0}.stat{padding:12px;background:#0a0d13;border:1px solid var(--line);border-radius:11px}.stat strong{display:block;font-size:21px;color:var(--lime)}.stat span{font-size:10px;color:var(--muted)}
+.results{margin-top:26px}.resultshead{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:14px}.resultshead h2{font-size:22px;margin:0 0 5px}.resultshead p{margin:0;font-size:12px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.clip{background:var(--panel);border:1px solid var(--line);border-radius:15px;overflow:hidden}.thumb{height:120px;padding:12px;display:flex;align-items:end;position:relative;background:linear-gradient(140deg,#293047,#131925 58%,#29341b)}.thumb:before{content:"";position:absolute;width:130px;height:130px;border:22px solid #c9ff5014;border-radius:50%;right:-25px;top:-52px}.score{position:absolute;top:10px;left:10px;background:#090b10cc;border:1px solid #ffffff19;border-radius:6px;padding:5px 7px;font-size:10px;color:var(--lime)}.duration{position:absolute;right:10px;bottom:10px;background:#07090de8;padding:4px 6px;border-radius:5px;font-size:10px}.cliptitle{font-size:14px;font-weight:850;line-height:1.3;position:relative;max-width:90%}.clipbody{padding:13px}.meta{display:flex;justify-content:space-between;gap:6px;color:var(--muted);font-size:10px;margin-bottom:10px}.why{font-size:11px;color:#b4bdcc;line-height:1.5;min-height:34px;margin-bottom:12px}.actions{display:flex;gap:6px}.actions .btn{flex:1;padding:9px 6px;font-size:10px}.empty{grid-column:1/-1;border:1px dashed #394255;border-radius:15px;text-align:center;padding:32px 14px;color:var(--muted);font-size:12px;line-height:1.7}
+.foot{margin-top:30px;border-top:1px solid var(--line);padding-top:17px;color:#8793a6;font-size:11px;line-height:1.65}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--lime);color:#10140a;font-size:12px;font-weight:850;padding:12px 16px;border-radius:10px;display:none;z-index:5}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel+.panel{margin-top:0}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){main{padding:28px 14px}.panel{padding:15px}.row{flex-direction:column}.row .btn{min-height:43px}.side{display:block}.side .panel+.panel{margin-top:14px}.cards{grid-template-columns:1fr}.status{font-size:9px}.sub{font-size:14px}h1{letter-spacing:-1.3px}}
+</style></head>
+<body><div class="app">
+<header><div class="brand"><div class="logo">▶</div>cortaí<span style="color:var(--lime)">.</span><span class="ai">AI LAB</span></div><div class="status">● MODO ECONÔMICO</div></header>
+<main>
+<div class="eyebrow">Seu editor inteligente de momentos</div>
+<h1>Uma live inteira.<br><span>Os melhores clips.</span></h1>
+<p class="sub">Cole o link, adicione a transcrição com timestamps e deixe o Cortaí analisar frases de impacto, reações e momentos de tensão para sugerir trechos curtos.</p>
+<div class="grid">
+<div>
+<section class="panel">
+<div class="head"><h2>01 / Fonte do vídeo</h2><span class="step">YOUTUBE</span></div>
+<div class="field"><label for="url">Link de compartilhamento</label><div class="row"><input id="url" placeholder="https://youtu.be/..." aria-label="Link do YouTube"><button class="btn primary" id="load">Carregar ↗</button></div></div>
+<div class="video"><div class="videotop"><span>PRÉVIA DO VÍDEO</span><span id="vstatus">Aguardando link</span></div><div class="videobody" id="preview"><div><div class="play">▶</div><strong>Seu vídeo aparece aqui</strong><p>O player será exibido quando você inserir um link válido do YouTube.</p></div></div></div>
+<div id="urlAlert"></div>
+<div class="help">A prévia usa o player incorporado do YouTube. Links privados, vídeos com restrição de incorporação ou removidos podem não funcionar.</div>
+</section>
+<section class="panel">
+<div class="head"><h2>02 / Transcrição do vídeo</h2><span class="step">ENTRADA PARA ANÁLISE</span></div>
+<div class="field"><label for="transcript">Cole a transcrição com marcação de tempo</label><textarea id="transcript" placeholder="[00:02:14] Não acredito que consegui acertar de tão longe!&#10;[00:04:32] Tem inimigo entrando pela direita!&#10;[00:06:05] Essa foi por muito pouco..."></textarea></div>
+<div class="help">Formato recomendado: <strong>[HH:MM:SS] fala</strong> ou <strong>[MM:SS] fala</strong>, uma fala por linha. Você pode copiar a transcrição do seu vídeo e colar aqui.</div>
+<div class="divider"></div>
+<div class="head"><h2>Estilo de momento</h2></div>
+<div class="preset" id="presets"><button class="pill active" data-mode="viral">🔥 Viral / impacto</button><button class="pill" data-mode="gaming">🎮 Gaming / ação</button><button class="pill" data-mode="story">🎙️ História / reação</button><button class="pill" data-mode="all">✨ Todos</button></div>
+<div class="divider"></div>
+<button class="btn primary" style="width:100%;min-height:48px" id="analyze">✦ Encontrar melhores momentos</button>
+<div id="analysisAlert"></div>
+</section>
+</div>
+<aside class="side">
+<section class="panel">
+<div class="head"><h2>03 / Preferências</h2><span class="step">CLIPS</span></div>
+<div class="field"><label for="limit">Quantidade de sugestões</label><select id="limit"><option value="3">3 melhores momentos</option><option value="5" selected>5 melhores momentos</option><option value="8">8 melhores momentos</option><option value="10">10 melhores momentos</option></select></div>
+<div class="field"><label for="length">Duração desejada</label><select id="length"><option value="20">Até 20 segundos</option><option value="30" selected>Até 30 segundos</option><option value="45">Até 45 segundos</option><option value="60">Até 60 segundos</option></select></div>
+<div class="field"><label for="format">Formato final</label><select id="format"><option value="9:16">Vertical 9:16 · Shorts / TikTok</option><option value="16:9">Horizontal 16:9 · YouTube</option><option value="1:1">Quadrado 1:1 · Feed</option></select></div>
+<div class="statrow"><div class="stat"><strong id="nclips">0</strong><span>SUGESTÕES</span></div><div class="stat"><strong id="nlines">0</strong><span>FALAS LIDAS</span></div><div class="stat"><strong id="nmode">IA</strong><span>ANÁLISE</span></div></div>
+<div class="help">O modo atual é uma análise local por regras e palavras-chave, sem API paga. Não envia sua transcrição para serviços externos.</div>
+</section>
+<section class="panel">
+<div class="head"><h2>Como obter a transcrição</h2></div>
+<ol style="margin:0;padding-left:18px;color:var(--muted);font-size:12px;line-height:1.8"><li>Abra seu vídeo no YouTube.</li><li>Abra a descrição ou o menu do vídeo.</li><li>Escolha “Mostrar transcrição”, se disponível.</li><li>Copie o texto e acrescente os tempos no formato indicado.</li></ol>
+<div class="divider"></div><button class="btn secondary" id="sample" style="width:100%">Testar com exemplo</button>
+</section>
+</aside>
+</div>
+<section class="results"><div class="resultshead"><div><h2>Seus melhores momentos</h2><p>Revise as sugestões antes de publicar.</p></div><button class="btn secondary" id="export" disabled>Exportar lista .txt</button></div><div class="cards" id="cards"><div class="empty">✦<br><strong>Pronto para encontrar seus momentos fortes?</strong><br>Insira um link e uma transcrição com timestamps, depois clique em “Encontrar melhores momentos”.</div></div></section>
+<div class="foot"><strong>Transparência:</strong> esta versão usa uma análise local gratuita de texto para sugerir timestamps; não é um modelo de IA generativa e não baixa nem renderiza MP4. Para automação completa a partir de apenas um link, será necessário um backend que obtenha a transcrição de forma permitida, execute a análise e processe o vídeo. A disponibilidade de transcrições depende do vídeo e das configurações do YouTube. Use conteúdo próprio ou autorizado.</div>
+</main></div><div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id);let videoId="",videoUrl="",mode="viral",suggestions=[];
+const sample=`[00:00:12] Hoje a missão é impossível, mas vamos tentar.
+[00:00:38] Meu Deus, tem inimigo por todo lado!
+[00:01:04] Espera, espera... eu tive uma ideia.
+[00:01:18] NÃO ACREDITO! Acertei de muito longe!
+[00:02:05] Essa foi por muito pouco, quase deu tudo errado.
+[00:03:20] A gente precisa entrar pela esquerda, agora!
+[00:04:11] O plano era perfeito até isso acontecer.
+[00:05:40] Olha isso, olha isso! Tem um cara bem ali.
+[00:06:02] Conseguimos! Eu falei que ia dar certo.
+[00:07:15] Essa foi a jogada mais insana da noite.
+[00:08:20] Calma, pessoal, ainda não acabou.
+[00:09:10] Se você viu isso, deixa o like e se inscreve!`;
+function toast(s){$("toast").textContent=s;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",2200)}
+function parseUrl(raw){try{let u=new URL(raw.trim()),id="";if(u.hostname==="youtu.be")id=u.pathname.split("/").filter(Boolean)[0]||"";else if(u.hostname.includes("youtube.com")){id=u.searchParams.get("v")||"";if(!id){let p=u.pathname.split("/").filter(Boolean),i=p.findIndex(x=>["embed","shorts","live"].includes(x));if(i>=0)id=p[i+1]||""}}return /^[\w-]{11}$/.test(id)?{id,url:"https://www.youtube.com/watch?v="+id}:null}catch{return null}}
+function load(){const p=parseUrl($("url").value);$("urlAlert").className="alert";$("urlAlert").textContent="";if(!p){$("urlAlert").className="alert error";$("urlAlert").textContent="Link inválido. Cole um link de vídeo, Shorts ou live do YouTube.";return}videoId=p.id;videoUrl=p.url;$("vstatus").textContent="Link reconhecido";$("preview").innerHTML='<iframe title="Player do YouTube" style="width:100%;height:220px;border:0" src="https://www.youtube-nocookie.com/embed/'+videoId+'" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';toast("Vídeo reconhecido. Agora cole a transcrição.")}
+function parseTime(s){let p=s.split(":").map(Number);if(p.some(n=>!Number.isFinite(n)))return null;if(p.length===2)return p[0]*60+p[1];if(p.length===3)return p[0]*3600+p[1]*60+p[2];return null}
+function fmt(n){n=Math.max(0,Math.floor(n));let h=Math.floor(n/3600),m=Math.floor(n%3600/60),s=n%60;return h?`${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${m}:${String(s).padStart(2,"0")}`}
+const words={viral:["não acredito","meu deus","insano","incrível","impossível","deu errado","por pouco","conseguimos","olha isso","nunca","melhor","surpresa","absurdo","caramba","uau","finalmente","quase","vitória","perfeito","deu certo"],gaming:["inimigo","tiro","acertei","missão","operação","pela direita","pela esquerda","jogada","headshot","sniper","base","atacar","fugir","morreu","eliminado","boss","loot","vitória","quase deu","ação"],story:["história","porque","por isso","eu pensei","não esperava","aconteceu","na verdade","o problema","aprendi","reação","surpresa","lembro","de repente","foi quando","meu plano"]};
+function analyze(){const raw=$("transcript").value.trim();if(!raw){$("analysisAlert").className="alert error";$("analysisAlert").textContent="Cole uma transcrição com timestamps para a análise local conseguir sugerir os melhores momentos.";return}
+const lines=raw.split(/\n+/).map((line,i)=>{const m=line.match(/^\s*\[?(\d{1,2}:\d{2}(?::\d{2})?)\]?\s*(.*)$/);if(!m)return null;const t=parseTime(m[1]),text=m[2].trim();return t===null||!text?null:{t,text,original:i}}).filter(Boolean);
+$("nlines").textContent=lines.length;
+if(!lines.length){$("analysisAlert").className="alert error";$("analysisAlert").textContent="Não encontrei timestamps. Use uma fala por linha, por exemplo: [00:01:24] Essa foi incrível!";return}
+const maxLen=Number($("length").value),limit=Number($("limit").value),keys=mode==="all"?[...new Set(Object.values(words).flat())]:words[mode];let scored=lines.map((l,i)=>{const lower=l.text.toLowerCase();let score=1;let hits=[];for(const k of keys){if(lower.includes(k)){score+=2;hits.push(k)}}if(/[!?]{1,}/.test(l.text))score+=1;if(l.text.length>75)score+=.5;if(/\b(não acredito|meu deus|olha isso|conseguimos|caramba)\b/i.test(l.text))score+=1.5;return {...l,score,hits,index:i}}).sort((a,b)=>b.score-a.score);
+let chosen=[];for(const s of scored){if(chosen.length>=limit)break;if(chosen.every(c=>Math.abs(c.t-s.t)>maxLen*.8))chosen.push(s)}chosen.sort((a,b)=>a.t-b.t);
+suggestions=chosen.map((s,i)=>{let start=Math.max(0,s.t-5),end=s.t+maxLen;let reason=s.hits.length?"Frase de impacto: "+s.hits.slice(0,2).join(", "):(/[!?]/.test(s.text)?"Pontuação e tom de reação detectados":"Trecho selecionado pela distribuição e contexto da fala");return {i,title:makeTitle(s.text),start,end,format:$("format").value,reason,source:s.text,score:Math.min(99,Math.round(45+s.score*8)),url:videoUrl||"https://www.youtube.com",videoId}});$("analysisAlert").className="alert info";$("analysisAlert").textContent=`Análise local concluída: ${lines.length} falas lidas e ${suggestions.length} sugestões geradas. Revise os horários, pois esta versão não entende o áudio ou o vídeo diretamente.`;$("nclips").textContent=suggestions.length;$("nmode").textContent="LOCAL";$("export").disabled=!suggestions.length;render()}
+function makeTitle(s){let t=s.replace(/[.!?]+$/,"").trim();if(t.length>58)t=t.slice(0,55).trim()+"…";return t||"Momento em destaque"}
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function render(){if(!suggestions.length){$("cards").innerHTML='<div class="empty">Nenhuma sugestão ainda.</div>';return}$("cards").innerHTML=suggestions.map((c,i)=>`<article class="clip"><div class="thumb"><span class="score">✦ SCORE ${c.score}</span><div class="cliptitle">${esc(c.title)}</div><span class="duration">${fmt(Math.min(c.end-c.start,Number($("length").value)))}</span></div><div class="clipbody"><div class="meta"><span>${fmt(c.start)} → ${fmt(c.end)}</span><span>${c.format}</span></div><div class="why">${esc(c.reason)}<br><span style="color:#79869a">“${esc(c.source)}”</span></div><div class="actions"><button class="btn secondary" onclick="watch(${i})">▶ Ver</button><button class="btn secondary" onclick="copyInfo(${i})">Copiar</button><button class="btn ghost" onclick="removeSuggestion(${i})">✕</button></div></div></article>`).join("")}
+function watch(i){const c=suggestions[i];window.open((c.url||"https://www.youtube.com")+"&t="+c.start+"s","_blank","noopener")}
+function copyInfo(i){const c=suggestions[i],txt=`${c.title}\n${c.url}&t=${c.start}s\nInício: ${fmt(c.start)} | Fim estimado: ${fmt(c.end)}\nFormato: ${c.format}\nMotivo: ${c.reason}`;copy(txt)}
+function copy(txt){if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>toast("Informações copiadas!")).catch(()=>fallback(txt));else fallback(txt)}
+function fallback(txt){let t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();toast("Informações copiadas!")}
+function removeSuggestion(i){suggestions.splice(i,1);$("nclips").textContent=suggestions.length;$("export").disabled=!suggestions.length;render()}
+$("load").onclick=load;$("url").addEventListener("keydown",e=>{if(e.key==="Enter")load()});$("analyze").onclick=analyze;$("sample").onclick=()=>{$("transcript").value=sample;if(!$("url").value) $("url").value="https://www.youtube.com/watch?v=dQw4w9WgXcQ";toast("Exemplo preenchido. Clique em analisar.")};
+$("presets").querySelectorAll("button").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;$("presets").querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b))});
+$("format").onchange=()=>{suggestions=suggestions.map(c=>({...c,format:$("format").value}));render()};
+$("export").onclick=()=>{const txt=suggestions.map((c,i)=>`${i+1}. ${c.title}\nURL: ${c.url}&t=${c.start}s\nTrecho estimado: ${fmt(c.start)} - ${fmt(c.end)}\nFormato: ${c.format}\nMotivo: ${c.reason}\n`).join("\n");const blob=new Blob([txt],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="cortai-sugestoes.txt";a.click();URL.revokeObjectURL(a.href)};
+</script></body></html>
